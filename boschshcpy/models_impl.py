@@ -601,11 +601,12 @@ class SHCThermostat(SHCBatteryDevice):
 
 
 class SHCClimateControl(SHCDevice):
-    from .services_impl import RoomClimateControlService, TemperatureLevelService
+    from .services_impl import RoomClimateControlService, TemperatureLevelService, HumidityLevelService
 
     def __init__(self, api, raw_device, raw_device_services):
         super().__init__(api, raw_device, raw_device_services)
         self._temperaturelevel_service = self.device_service("TemperatureLevel")
+        self._humiditylevel_service = self.device_service("HumidityLevel")
         self._roomclimatecontrol_service = self.device_service("RoomClimateControl")
 
     @property
@@ -656,8 +657,13 @@ class SHCClimateControl(SHCDevice):
     def temperature(self) -> float:
         return self._temperaturelevel_service.temperature
 
+    @property
+    def humidity(self) -> float:
+        return self._humiditylevel_service.humidity
+
     def update(self):
         self._temperaturelevel_service.short_poll()
+        self._humiditylevel_service.short_poll()
         self._roomclimatecontrol_service.short_poll()
 
     def summary(self):
